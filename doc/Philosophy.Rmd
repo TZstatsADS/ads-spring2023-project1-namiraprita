@@ -1,0 +1,226 @@
+---
+title: "The legacy of Socrates: the dichotomy of the greatest figures of Western philosophy, does everything has to be polarized?"
+author: "Namira Suniaprita"
+date: "02/01/2022"
+output: html_document
+---
+
+```{r}
+#library
+library(dplyr)
+library(knitr)
+library(sentimentr)
+library(gplots)
+library(ggplot2)
+library(tidyverse)
+library(factoextra)
+library(tm)
+library(plotly)
+library(wordcloud)
+library(RColorBrewer)
+library(sqldf)
+library(tidytext)
+library(syuzhet)
+library(ggplot2)
+library(stringr)
+library(readr)
+library(skimr)
+library(SnowballC)
+```
+```{r}
+pd <- read_csv("~/Documents/ADS Project 1 - Philosophy Data/philosophy_data.csv")
+head(pd)
+```
+```{r}
+skim(pd)
+```
+```{r}
+str(ph)
+```
+
+```{r}
+pd_cor <- Corpus(VectorSource(pd$tokenized_txt))
+```
+
+```{r}
+pd_tidy <- pd_cor %>% 
+  tm_map(removeNumbers) %>% 
+  tm_map(removePunctuation) %>% 
+  tm_map(removeWords, c("will", "one", "can", "must", "just", "since", "yet", "might", "two", "may","however", stopwords("english"))) %>% 
+  tm_map(stripWhitespace) %>% 
+  TermDocumentMatrix() %>% 
+  tidy()
+```
+```{r}
+#top10 words
+pd_top10 <- pd_tidy %>% 
+  group_by(term) %>% 
+  summarise(frequency = sum(count)) %>% 
+  arrange(desc(frequency)) %>% 
+  head(10)
+```
+
+```{r}
+pd_top10
+```
+
+```{r}
+library(usethis) 
+usethis::edit_r_environ()
+```
+
+
+1. Worldcloud
+
+```{r}
+pd_school <- pd %>% split(.$school)
+```
+```{r}
+head(pd_school)
+```
+
+```{r}
+par(mfrow=c(1,2))
+function.worldcloud(pd_school[1], names(pd_school[11]), "Dark2")
+function.worldcloud(pd_school[2], names(pd_school[2]), "Blues")
+```
+2. Top 10 Words
+
+```{r}
+Plato <- filter(pd, author == 'Plato')
+Aristotle <- filter(pd, author == 'Aristotle')
+```
+
+```{r}
+#### Plato Top 10
+word_P <- Corpus(VectorSource(Plato$sentence_lowered))
+word_P <- tm_map(word_P, stripWhitespace)
+word_P <- tm_map(word_P, content_transformer(tolower))
+word_P <- tm_map(word_P, removeWords, stopwords("english"))
+word_P <- tm_map(word_P, removeWords, character(0))
+word_P <- tm_map(word_P, removePunctuation)
+word_P <- tm_map(word_P, removeNumbers)
+dword_P <- TermDocumentMatrix(word_P)
+```
+```{r}
+mword_P <- as.matrix(dword_P)
+sort <- sort(rowSums(mword_P),decreasing = TRUE)
+dt_P <- data.frame(word = names(sort),freq = sort)
+```
+
+```{r}
+### comparison of top 10 frequent words ----
+plot_P <- ggplot(dt_P[1:10,], aes(x = reorder(word,-freq),y = freq)) + geom_col(fill = 'coral1') + geom_text(aes(label = freq), vjust = -0.5) + labs(x = "Word", y = "Count") + ggtitle("Plato") 
+```
+```{r}
+#### Aristotle Top 10
+word_A <- Corpus(VectorSource(Aristotle$sentence_lowered))
+word_A <- tm_map(word_A, stripWhitespace)
+word_A <- tm_map(word_A, content_transformer(tolower))
+word_A <- tm_map(word_A, removeWords, stopwords("english"))
+word_A <- tm_map(word_A, removeWords, character(0))
+word_A <- tm_map(word_A, removePunctuation)
+word_A <- tm_map(word_A, removeNumbers)
+dword_A <- TermDocumentMatrix(word_A)
+```
+
+```{r}
+mword_A <- as.matrix(dword_A)
+sort_A <- sort(rowSums(mword_A),decreasing = TRUE)
+dt_A <- data.frame(word = names(sort),freq = sort)
+```
+
+```{r}
+### comparison of top 10 frequent words ----
+plot_A <- ggplot(dt_A[1:10,], aes(x = reorder(word,-freq),y = freq)) + geom_col(fill = 'coral1') + geom_text(aes(label = freq), vjust = -0.5) + labs(x = "Word", y = "Count") + ggtitle("Aristotle") 
+```
+
+
+```{r}
+pd.tdm.overall=summarise(group_by(pd_tidy, term), s_count = sum(count))
+pd.wordfreq <- data.frame(word =pd.tdm.overall$term ,freq=pd.tdm.overall$s_count)
+pd.wordfreq <- pd.wordfreq[order(pd.wordfreq$freq,decreasing = TRUE),]
+
+barplot(pd.wordfreq[1:10,]$freq, las = 2, names.arg = pd.wordfreq[1:10,]$word, main ="Most frequent words", col=rgb(0.2,0.4,0.6,0.6),ylab = "Frequency", xlab = "Words")
+```
+
+3. Sentiment Analysis
+```{r}
+sqldf("select DISTINCT school, author
+      from ph 
+      order by school")
+```
+
+```{r}
+#Plato
+pd_plato<- pd_school$plato
+word_count <- str_count(pd_plato$sentence_str, "\\w+")
+emo_plato <- diag(1/(word_count+0.01)) %*%  as.matrix(get_nrc_sentiment(pd_plato$sentence_str))
+pd_emo_pla <- cbind(pd_plato[ ,1:5], word_count, emo_plato)
+pd_emo_pla <- sqldf(
+"select *, row_number() over(partition by author) as sent_id
+      from pd_emo_pla
+      order by author"
+)
+```
+
+```{r}
+par(mfrow=c(2,1), mar=c(1,0,2,0), bty="n", xaxt="n", yaxt="n", font.main=1)
+function_emotion(df_a = pd_emo_pla, author_v = "Plato", author = "Plato")
+```
+```{r}
+#Aristotle
+pd_aris<- pd_school$aristotle
+word_count <- str_count(pd_aris$sentence_str, "\\w+")
+emo_aris <- diag(1/(word_count+0.01)) %*%  as.matrix(get_nrc_sentiment(pd_aris$sentence_str))
+pd_emo_ari <- cbind(pd_aris[ ,1:5], word_count, emo_aris)
+pd_emo_ari <- sqldf(
+"select *, row_number() over(partition by author) as sent_id
+      from pd_emo_ari
+      order by author"
+)
+```
+
+```{r}
+par(mfrow=c(2,1), mar=c(1,0,2,0), bty="n", xaxt="n", yaxt="n", font.main=1)
+function_emotion(df_a = pd_emo_ari, author_v = "Aristotle", author = "Aristotle")
+```
+```{r}
+#Plato
+par(mfrow=c(2,2), mar=c(4, 6, 2, 1))
+col.use=c("red2", "darkgoldenrod1", 
+            "chartreuse3", "blueviolet",
+            "darkgoldenrod2", "dodgerblue3", 
+            "darkgoldenrod1", "darkgoldenrod1")
+emo_means_pla=colMeans(select(pd_emo_pla, anger:trust)>0.01)
+barplot(emo_means_pla[order(emo_means_pla)], las=2, col=col.use[order(emo_means_pla)], horiz=T, main = "Plato")
+```
+```{r}
+#Aristotle
+par(mfrow=c(2,2), mar=c(4, 6, 2, 1))
+col.use=c("red2", "darkgoldenrod1", 
+            "chartreuse3", "blueviolet",
+            "darkgoldenrod2", "dodgerblue3", 
+            "darkgoldenrod1", "darkgoldenrod1")
+emo_means_ari=colMeans(select(pd_emo_ari, anger:trust)>0.01)
+barplot(emo_means_ari[order(emo_means_ari)], las=2, col=col.use[order(emo_means_ari)], horiz=T, main = "Aristotle")
+```
+```{r}
+#Plato
+heatmap.2(cor(pd_emo_pla %>% select(anger:trust)), 
+          scale = "none", 
+          col = bluered(100), margin=c(6, 6), key=F,
+          trace = "none", density.info = "none")
+```
+```{r}
+#Aristotle
+heatmap.2(cor(pd_emo_ari %>% select(anger:trust)), 
+          scale = "none", 
+          col = bluered(100), margin=c(6, 6), key=F,
+          trace = "none", density.info = "none")
+```
+Clustering
+```{r}
+
+```
+
