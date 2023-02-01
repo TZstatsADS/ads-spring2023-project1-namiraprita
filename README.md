@@ -9,15 +9,16 @@ This is the first and only *individual* (as opposed to *team*) project this seme
 
 Term: Spring 2023
 
-+ Project title: *The Legacy of Socrates: the dichotomy of the greatest figures of Western philosophy, does everything have to be polarized?*
++ Project title: **The Legacy of Socrates: the dichotomy of the greatest figures of Western philosophy, does everything have to be polarized?**
 + This project is conducted by Namira Suniaprita
 
 + Project summary: The philosophies of Plato and Aristotle are viewed differently by various scholars and fans. Some see Aristotle's philosophy as straightforward and lacking depth, while others criticize Plato's ideas as overly complex and outdated. It is intriguing to compare these differing perspectives as both refer back to the beliefs of their common teacher, Socrates.
 
 This project aims to answer this big question: Putting aside their philosophical ideas, how do their works differ in terms of their writing style and the sentiment conveyed in their writings?
 
-*Writings:* Despite having a teacher-student relationship,  how does Plato’s writings differ from Aristotle's in terms of most frequent words and length of sentences? 
- *Sentiment:* Do Plato and Aristotle have different sentiments? If yes, how far is the difference in terms of emotion fluctuations? And do they convey more positive or negative messages?
+1. Writings: Despite having a teacher-student relationship,  how does Plato’s writings differ from Aristotle's in terms of most frequent words and length of sentences? 
+
+ 2. Sentiment: Do Plato and Aristotle have different sentiments? If yes, how far is the difference in terms of emotion fluctuations? And do they convey more positive or negative messages?
 
 This project utilized multiple text mining techniques and sentiment analysis on writings of both Plato and Aristotle works to address the questions.
 
