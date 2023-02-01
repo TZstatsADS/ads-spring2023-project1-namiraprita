@@ -1,0 +1,401 @@
+---
+title: 'The Legacy of Socrates: the dichotomy of the greatest figures of Western philosophy, does everything have to be polarized?'
+author: "Author:  Namira Suniaprita (ns3646)"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: 
+        collapsed: false
+    number_sections: false
+    df_print: paged
+    theme: flatly
+    highlight: zenburn
+    css: assets/style.css
+  pdf_document:
+    latex_engine: xelatex
+    fig_caption: yes
+---
+```{r echo=FALSE, message=FALSE}
+# setwd("~/Documents/GitHub/ads-spring2023-project1-namiraprita")
+```
+
+
+```{r echo=FALSE, message=FALSE}
+knitr::include_graphics("~/Documents/GitHub/ads-spring2023-project1-namiraprita/figs/ap4.jpeg")
+```
+
+ocrates, widely considered as the father of Western philosophy, adds a unique perspective to the debates surrounding his students Plato and Aristotle. He is famously quoted as saying, “The only true wisdom is knowing that you know nothing”, emphasizing the importance of humility and the pursuit of knowledge. This quote highlights Socrates' belief in the constant quest for wisdom and the acknowledgment that one can never truly claim to possess it.
+
+Fans of Plato see Aristotle's philosophy as overly simplistic and lacking in meaningful ideas and arguments, as seen in discussions on [Diffen](https://www.diffen.com/difference/Aristotle_vs_Plato#:~:text=Plato%20believed%20that%20concepts%20had,be%20analyzed%20on%20its%20own.). In light of these differing opinions, it is fascinating to consider how the philosophies of Plato and Aristotle diverge from their teacher Socrates' beliefs. 
+
+>How have they interpreted the Socratic philosophy of humility and the pursuit of knowledge, and what are the implications of these differences in their respective philosophies?
+
+To summarize, the questions we aim to answer are:
+
+- *Writings:* Despite having a teacher-student relationship,  how does Plato’s writings differ from Aristotle's in terms of most frequent words and length of sentences? 
+
+- *Sentiment:* Do Plato and Aristotle have different sentiments? If yes, how far is the difference in terms of emotion fluctuations? And do they convey more positive or negative messages?
+
+
+```{r echo=FALSE, results='hide',message=FALSE}
+#library
+library(dplyr)
+library(knitr)
+library(sentimentr)
+library(gplots)
+library(ggplot2)
+library(tidyverse)
+library(factoextra)
+library(tm)
+library(plotly)
+library(wordcloud)
+library(RColorBrewer)
+library(sqldf)
+library(tidytext)
+library(syuzhet)
+library(ggplot2)
+library(stringr)
+library(readr)
+library(skimr)
+library(SnowballC)
+library(SentimentAnalysis)
+source("/Users/namirasuniaprita/Documents/GitHub/ads-spring2023-project1-namiraprita/lib/function_boxplot.R")
+source("/Users/namirasuniaprita/Documents/GitHub/ads-spring2023-project1-namiraprita/lib/function_emotion.R")
+source("/Users/namirasuniaprita/Documents/GitHub/ads-spring2023-project1-namiraprita/lib/function_speech.R")
+source("/Users/namirasuniaprita/Documents/GitHub/ads-spring2023-project1-namiraprita/lib/function_worldcloud.R")
+
+```
+
+
+```{r echo=FALSE, results='hide',message=FALSE}
+#Loading data
+pd <- read_csv('/Users/namirasuniaprita/Documents/GitHub/ads-spring2023-project1-namiraprita/data/philosophy_data.csv')
+
+#Exploring the skewness of the data
+skim(pd) #despite the skew, the datasets is already clean
+```
+
+## Topic 1: Writings
+### Despite having a teacher-student relationship,  how does Plato’s writings differ from Aristotle's in terms of most frequent words and length of sentences? 
+
+Plato and Aristotle are two of the most influential figures in Western philosophy. They both studied under Socrates, and went on to develop their own philosophies and ways of thinking about the world. Despite their shared background and teacher-student relationship, their writings differ significantly in terms of their writing style and language usage. One aspect of this difference can be seen in the most frequent words and length of sentences used in their works. Understanding these linguistic differences can provide insights into how their perspectives and ideas differed and how their writing styles may have influenced their audiences.
+
+For the first topic, we aim to analyze the most frequently used words in the works of Plato and Aristotle. Our approach is to examine the word frequency distribution in their writings using the wordcloud package. At a quick look, it's noticeable that both authors frequently use the words *"one"* and *"things"* in their writings.
+
+
+```{r echo=FALSE, results='hide',message=FALSE}
+#Checking the flow of the function
+pd_cor <- Corpus(VectorSource(pd$tokenized_txt))
+pd_tidy <- pd_cor %>% 
+  tm_map(removeNumbers) %>% 
+  tm_map(removePunctuation) %>% 
+  tm_map(removeWords, c("will", "can", "must", "just", "since", "yet", "might", "may","however", stopwords("english"))) %>% 
+  tm_map(stripWhitespace) %>% 
+  TermDocumentMatrix() %>% 
+  tidy()
+```
+
+
+```{r echo=FALSE, results='hide',message=FALSE}
+# library(usethis)
+# usethis::edit_r_environ()
+```
+
+
+#### Word Cloud
+```{r echo=FALSE, message=FALSE}
+pd_school <- pd %>% split(.$school)
+
+#World Cloud for Plato 
+function.worldcloud(pd_school[11], names(pd_school[11]), "Accent")
+```
+```{r echo=FALSE, message=FALSE}
+#World Cloud for Aristotle
+function.worldcloud(pd_school[2], names(pd_school[2]), "Dark2")
+```
+
+
+The differences between Plato and Aristotle's views on reality are reflected in their most frequent words found in their writings. Plato, known for his contributions to critical thinking through the Socratic Method, is focused on examining life through reflections and reasonings as stated in his famous saying "the unexamined life is not worth living" and in his book "The Republic." His writings often feature the word "think" as a result of his emphasis on dialectical inquiry.
+
+On the other hand, Aristotle's approach to knowledge is characterized by his observations of physical objects and living things, as seen in the prevalence of words like "animals," "nature," "water," and "earth" in his writings. He based his definition of reality on scientific thinking rather than ideas, leading to his contributions in various scientific fields.
+
+The comparison of their most frequent words highlights the contrasting views of reality between the two philosophers, with Plato focused on reason and inquiry, and Aristotle on observation and scientific understanding.
+
+We will examine the most frequently used words in the writings of Plato and Aristotle by calculating the proportion or relative frequency of each word. The graph below shows the top 10 words with the highest relative frequency in their respective works.
+
+Plato and Aristotle both have several common words in their top 10 most frequent words, such as "one", "things", and "good". This similarity in word choice highlights the common themes that both philosophers explored in their writings.
+
+
+```{r echo=FALSE, results='hide',message=FALSE}
+##Filter the authors
+Plato <- filter(pd, author == 'Plato')
+Aristotle <- filter(pd, author == 'Aristotle')
+
+#Change to Corpus - Plato
+plato_word <- Corpus(VectorSource(Plato$sentence_lowered))
+plato_word <- tm_map(plato_word, stripWhitespace)
+plato_word <- tm_map(plato_word, content_transformer(tolower))
+plato_word <- tm_map(plato_word, removeWords, c("will", "can", "must", "just", "since", "yet", "might", "may","however", stopwords("english")))
+plato_word <- tm_map(plato_word, removeWords, character(0))
+plato_word <- tm_map(plato_word, removePunctuation)
+plato_word <- tm_map(plato_word, removeNumbers)
+dplato_word <- TermDocumentMatrix(plato_word)
+
+#Change to Corpus - Aristotle
+
+aristotle_word <- Corpus(VectorSource(Aristotle$sentence_lowered))
+aristotle_word <- tm_map(aristotle_word, stripWhitespace)
+aristotle_word <- tm_map(aristotle_word, content_transformer(tolower))
+aristotle_word <- tm_map(aristotle_word, removeWords, c("will", "can", "must", "just", "since", "yet", "might", "may","however", stopwords("english")))
+aristotle_word <- tm_map(aristotle_word, removeWords, character(0))
+aristotle_word <- tm_map(aristotle_word, removePunctuation)
+aristotle_word <- tm_map(aristotle_word, removeNumbers)
+daristotle_word <- TermDocumentMatrix(aristotle_word)
+
+
+#Create data frame - Plato
+matrix_plato <- as.matrix(dplato_word)
+sort_p <- sort(rowSums(matrix_plato),decreasing = TRUE)
+plato_data<- data.frame(word = names(sort_p),freq = sort_p)
+
+#Create data frame - Aristotle
+matrix_aristotle <- as.matrix(daristotle_word)
+sort_A <- sort(rowSums(matrix_aristotle),decreasing = TRUE)
+arisotle_data <- data.frame(word = names(sort_A),freq = sort_A)
+
+```
+
+
+```{r echo=FALSE, message=FALSE}
+#Barplot - Plato
+plato_plot <- ggplot(plato_data[1:10,], aes(x = reorder(word,-freq),y = freq)) + geom_col(fill = "darkorange1") + geom_text(aes(label = freq), vjust = -0.5) + labs(x = "Word", y = "Count") + ggtitle("Most Frequent Words for Plato's Writings")
+plato_plot
+                                                                                                                                                                                      
+```
+
+
+```{r echo=FALSE, message=FALSE}
+#Barplot - Aristotle
+aristotle_plot <- ggplot(arisotle_data[1:10,], aes(x = reorder(word,-freq),y = freq)) + geom_col(fill = 'coral1') + geom_text(aes(label = freq), vjust = -0.5) + labs(x = "Word", y = "Count") + ggtitle("Most Frequent Words for Plato's Writings") 
+aristotle_plot
+```
+
+### How do the lengths of sentences (in terms of number of words) differ between Plato's and Aristotle's works?
+
+
+```{r echo=FALSE, results='hide',message=FALSE}
+#Filter datasets
+plato_boxplot <- pd %>% 
+                  filter(author == "Plato")
+ari_boxplot <-  pd %>% 
+                  filter(author == "Aristotle")
+```
+
+```{r echo=FALSE, message=FALSE}
+#Plato
+sentence_length_plato <- ggplot(data = plato_boxplot, aes(x = author, y = sentence_length)) +
+  geom_boxplot(aes(fill = author)) +
+  stat_summary(fun.data = boxplot_stats_p, geom = "text", hjust = 1, vjust = 1) +
+  labs(x = "",y = "Sentence Length (in words)") +
+  ggtitle("Number of Words per Sentences by Plato") 
+sentence_length_plato
+```
+
+```{r echo=FALSE, message=FALSE}
+#Aristotle
+sentence_length_ari <- ggplot(data = ari_boxplot, aes(x = author, y = sentence_length)) +
+  geom_boxplot(aes(fill = author)) +
+  stat_summary(fun.data = boxplot_stats_a, geom = "text", hjust = 1, vjust = 1) +
+  labs(x = "",y = "Sentence length") +
+  ggtitle("Number of Words per Sentences by Aristotle") 
+sentence_length_ari
+```
+
+
+The writing styles of Plato and Aristotle, two ancient Greek philosophers, contrast in terms of sentence length, as indicated by their mean, median, and standard deviation statistics. Aristotle tends to write in longer sentences compared to Plato, reflecting their different writing styles. Aristotle's works are predominantly treatises, while Plato's works are poetic representations of his philosophical ideas. Despite Aristotle being known for his straightforward thinking and short sentences, the data contradicts this popular belief. On the other hand, Plato's writing style, which involves dialogues and exploration of abstract concepts, typically requires longer sentences.
+
+***
+
+## Topic 2: Sentiments
+### Do Plato and Aristotle have different sentiments?
+
+
+#### NCR Sentiment
+
+In the next topic, we will analyze the sentiment in the writing of Plato and Aristotle. By using the NRC lexicon, which includes 10 different sentiments, we can determine the proportion of each sentiment in their works. The distribution of sentiments in their writing will have a unique pattern.
+
+```{r echo=FALSE, results='hide',message=FALSE}
+
+#Sentiment Analysis - Plato
+pd_plato<- pd_school$plato
+word_count <- str_count(pd_plato$sentence_str, "\\w+")
+emo_plato <- diag(1/(word_count+0.01)) %*%  as.matrix(get_nrc_sentiment(pd_plato$sentence_str))
+pd_emo_pla <- cbind(pd_plato[ ,1:5], word_count, emo_plato)
+pd_emo_pla <- sqldf(
+"SELECT *, row_number() over(partition by author) as sent_id
+      FROM pd_emo_pla
+      ORDER BY author"
+)
+
+```
+
+```{r echo=FALSE, results='hide',message=FALSE}
+#Sentiment Analysis - Aristotle
+pd_aris<- pd_school$aristotle
+word_counta <- str_count(pd_aris$sentence_str, "\\w+")
+emo_aris <- diag(1/(word_counta+0.01)) %*%  as.matrix(get_nrc_sentiment(pd_aris$sentence_str))
+pd_emo_ari <- cbind(pd_aris[ ,1:5], word_counta, emo_aris)
+pd_emo_ari <- sqldf(
+"SELECT *, row_number() over(partition by author) as sent_id
+      FROM pd_emo_ari
+      ORDER BY author"
+)
+```
+
+
+```{r echo=FALSE, message=FALSE}
+#Plato & Aristotle - Sentence Length& Emotion
+par(mfrow=c(2,1), mar=c(1,0,2,0), bty="n", xaxt="n", yaxt="n", font.main=1)
+function_emotion_p(dataframe = pd_emo_pla, author_p = "Plato", author = "Plato")
+function_emotion_a(dataframe = pd_emo_ari, author_p = "Aristotle", author = "Aristotle")
+```
+
+The barplots above show the sentiment differences between Plato and Aristotle's writings and how it differs according to length of sentences. Both authors have some similarities in terms of emotions, with only a small portion of joy (light blue) represented in the plots. However, there are also notable differences, such as Plato's prevalence of anger (red) and anticipation (light green) compared to Aristotle's emphasis on anticipation  (light green) and fear (purple). Additionally, the authors show variation in sentence length, with Plato having a consistent increase and Aristotle showing fluctuations, particularly when writing about fear and trust.
+
+Next, we will delve deeper into the means of emotions. According to the charts below, the two most prominent emotions among all schools are trust and anticipation, both of which are positive
+
+
+```{r echo=FALSE, message=FALSE}
+#Plato
+par(mfrow=c(2,1), mar=c(2,6, 2, 1))
+col.use=c("red2", "darkgoldenrod1", 
+            "chartreuse3", "blueviolet",
+            "darkgoldenrod2", "dodgerblue3", 
+            "darkgoldenrod1", "darkgoldenrod1")
+emo_means_pla=colMeans(select(pd_emo_pla, anger:trust)>0.01)
+barplot(emo_means_pla[order(emo_means_pla)], las=2, col=col.use[order(emo_means_pla)], horiz=T, main = "Plato")
+emo_means_ari=colMeans(select(pd_emo_ari, anger:trust)>0.01)
+barplot(emo_means_ari[order(emo_means_ari)], las=2, col=col.use[order(emo_means_ari)], horiz=T, main = "Aristotle")
+```
+
+The barcharts reveal that both Plato and Aristotle's writing primarily express trust and anticipation as their dominant emotions. However, Aristotle's works also prominently display fear, whereas Plato's show a higher presence of joy. Both writers have surprise and disgust as the least prevalent emotions in their writings.
+
+### Do they convey more positive or negative messages?
+
+
+```{r echo=FALSE, results='hide',message=FALSE}
+pla_df <- pd[pd$school=="plato",]
+ari_df <- pd[pd$school=="aristotle",]
+```
+
+```{r echo=FALSE, message=FALSE}
+par(mfrow=c(2,1), mar=c(2,6, 2, 1))
+emotion_pie_chart(pla_df)
+emotion_pie_chart(ari_df)
+```
+
+The writings of both Plato and Aristotle exhibit a predominantly positive sentiment. This is reflected in the high prevalence of emotions such as trust and anticipation in their works. 
+
+```{r echo=FALSE, message=FALSE}
+#Plato
+heatmap.2(cor(pd_emo_pla %>% select(anger:trust)), 
+          scale = "none", 
+          col = bluered(100), margin=c(6, 6), key=F,
+          trace = "none", density.info = "none")
+```
+
+```{r echo=FALSE, message=FALSE}
+#Aristotle
+heatmap.2(cor(pd_emo_ari %>% select(anger:trust)), 
+          scale = "none", 
+          col = bluered(100), margin=c(6, 6), key=F,
+          trace = "none", density.info = "none")
+```
+
+
+#### What are the top 6 emotionally charged sentences for Trust?
+
+The analysis of the means of emotion in the writing of Plato and Aristotle has revealed that trust is a dominant theme. This raises the question of how trust is being portrayed in the sentences of each philosopher's work. By examining the ways trust is portrayed, we can gain insight into the beliefs and values of both Plato and Aristotle and the impact they had on the philosophical and cultural landscape.
+
+```{r echo=FALSE, message=FALSE}
+#Create dataframe - Plato
+author.sentence.list=NULL
+author.speech.list= 
+  pd%>%
+  filter(school== "plato") %>%
+  group_by(school,author)%>%
+  summarise(fulltext=paste(sentence_spacy,collapse = ''))
+source("/Users/namirasuniaprita/Documents/GitHub/ads-spring2023-project1-namiraprita/lib/function_sentences.R")
+names(author.sentence.list)
+```
+
+```{r echo=FALSE, results='hide',message=FALSE}
+author.sentence.list=
+  author.sentence.list%>%
+  filter(!is.na(word.count))
+
+author.sentence.list%>%pull(author)%>%unique()
+```
+
+```{r echo=FALSE, message=FALSE}
+#Plato Sentence - Trust
+emotions.types=c("anticipation", "joy", "surprise", "trust",
+                 "anger", "disgust", "fear", "sadness")
+
+tibble::as_tibble(author.sentence.list)%>%
+     filter(author=="Plato", word.count>=4)%>%
+    select(sentences, trust)%>%
+    dplyr::arrange(desc(trust))%>%
+    select(sentences)%>%
+    head(n=6)%>%
+  unlist()
+```
+
+
+```{r echo=FALSE, message=FALSE}
+#Create dataframe - Aristotle
+author.sentence.list2=NULL
+author.speech.list2= 
+  pd%>%
+  filter(school== "aristotle") %>%
+  group_by(school,author)%>%
+  summarise(fulltext=paste(sentence_spacy,collapse = ''))
+source("/Users/namirasuniaprita/Documents/GitHub/ads-spring2023-project1-namiraprita/lib/function_sentences.R")
+names(author.sentence.list2)
+```
+
+```{r echo=FALSE, results='hide',message=FALSE}
+author.sentence.list2=
+  author.sentence.list2%>%
+  filter(!is.na(word.count))
+author.sentence.list2%>%pull(author)%>%unique()
+```
+
+```{r echo=FALSE, message=FALSE}
+emotions.types=c("anticipation", "joy", "surprise", "trust",
+                 "anger", "disgust", "fear", "sadness")
+
+tibble::as_tibble(author.sentence.list2)%>%
+     filter(author=="Aristotle", word.count>=4)%>%
+    select(sentences, trust)%>%
+    dplyr::arrange(desc(trust))%>%
+    select(sentences)%>%
+    head(n=6)%>%
+  unlist()
+```
+
+***
+
+```{r echo=FALSE, results='hide',message=FALSE}
+##check
+```
+
+## Summary
+
+- The examination of the vocabulary used in Plato and Aristotle's writings shows similarities, as both authors frequently use words such as "one", "things", "say", and "good". Additionally, the number of words used in their works is different, as indicated by their distributions in average, median, and standard deviation. A closer look reveals that Aristotle's writings tend to have a greater number of lengthy pieces, with some works containing 140 to 150 words, whereas Plato's tend to have more moderate lengths.
+
+- Both writers convey positive messages in all of their works with anticipation and trust being the top emotions. However, in contrast to the sentiment found in Plato's works, Aristotle's writings tend to have a higher probability of showing fear, while Plato's are more frequently characterized by joy.
+
+- Caveats: It is important to note that for the purpose of simplicity, the analysis only classifies the emotion with the highest and mean score for each sentence, without considering the nuanced nature of mixed emotions in a sentence.
+

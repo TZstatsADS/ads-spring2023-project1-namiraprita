@@ -2,4 +2,4 @@
 
 ### Figs folder
 
-The figs directory contains the figures. This directory only contains generated files; that is, one should always be able to delete the contents and regenerate them.
+This folder contain pictures/figures related to the project. In this case, there's only two pictures: project description and Plato vs Aristotle illustration as stated in the beginning of the main report.
