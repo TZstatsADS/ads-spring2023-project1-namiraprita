@@ -297,23 +297,6 @@ emotion_pie_chart(ari_df)
 
 The writings of both Plato and Aristotle exhibit a predominantly positive sentiment. This is reflected in the high prevalence of emotions such as trust and anticipation in their works. 
 
-```{r echo=FALSE, message=FALSE}
-#Plato
-heatmap.2(cor(pd_emo_pla %>% select(anger:trust)), 
-          scale = "none", 
-          col = bluered(100), margin=c(6, 6), key=F,
-          trace = "none", density.info = "none")
-```
-
-```{r echo=FALSE, message=FALSE}
-#Aristotle
-heatmap.2(cor(pd_emo_ari %>% select(anger:trust)), 
-          scale = "none", 
-          col = bluered(100), margin=c(6, 6), key=F,
-          trace = "none", density.info = "none")
-```
-
-
 #### What are the top 6 emotionally charged sentences for Trust?
 
 The analysis of the means of emotion in the writing of Plato and Aristotle has revealed that trust is a dominant theme. This raises the question of how trust is being portrayed in the sentences of each philosopher's work. By examining the ways trust is portrayed, we can gain insight into the beliefs and values of both Plato and Aristotle and the impact they had on the philosophical and cultural landscape.
