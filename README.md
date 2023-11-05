@@ -1,13 +1,5 @@
- Applied Data Science @ Columbia
-## Spring 2023
-## Project 1: A "data story" on the history of philosophy
 
-<img src="figs/100126-the-glass.jpeg" width="500">
-
-### [Project Description](doc/)
-This is the first and only *individual* (as opposed to *team*) project this semester. 
-
-Term: Spring 2023
+<img src="figs/ap4.jpeg" width="500">
 
 + Project title: **The Legacy of Socrates: the dichotomy of the greatest figures of Western philosophy, does everything have to be polarized?**
 + This project is conducted by Namira Suniaprita
